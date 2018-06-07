@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAuthDemo", "AzureAuthDemo\AzureAuthDemo.csproj", "{DD097C43-934E-487E-A692-908936B86456}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAuthDemo.ManualTokenHandling", "AzureAuthDemo.ManualTokenHandling\AzureAuthDemo.ManualTokenHandling.csproj", "{9E573FB9-CE85-4E26-9F73-A5A052B3DDE8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAuthDemo.Adal", "AzureAuthDemo.Adal\AzureAuthDemo.Adal.csproj", "{2DEA1442-86C8-4F4F-AD33-9448B8558B18}"
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DD097C43-934E-487E-A692-908936B86456}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD097C43-934E-487E-A692-908936B86456}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD097C43-934E-487E-A692-908936B86456}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD097C43-934E-487E-A692-908936B86456}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E573FB9-CE85-4E26-9F73-A5A052B3DDE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E573FB9-CE85-4E26-9F73-A5A052B3DDE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E573FB9-CE85-4E26-9F73-A5A052B3DDE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
