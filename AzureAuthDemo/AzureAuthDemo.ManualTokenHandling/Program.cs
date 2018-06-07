@@ -50,6 +50,16 @@ namespace AzureAuthDemo.ManualTokenHandling
             graphResponse = GetGraphResponseAsync("me", tokenResponse.AccessToken).Result;
 
 
+
+            Console.WriteLine("8. get V2 endpoint authentication code");
+            string v2Scopes = "offline_access User.Read Files.ReadWrite https://graph.microsoft.com/Calendars.Read";
+            var v2Code = getAuthorizationCodeV2(STR_ClientId, STR_RedirectUri, v2Scopes);
+
+            Console.WriteLine("9. Retrieving V2 access token");
+            var v2TokenResponse = getTokenResponseV2Async(STR_ClientId, STR_RedirectUri, v2Code, v2Scopes).Result;
+
+            Console.WriteLine("10. Using V2 access token");
+            var v2GraphResponse = GetGraphResponseAsync("me", v2TokenResponse.AccessToken).Result;
         }
 
         /// <summary>
@@ -69,13 +79,34 @@ namespace AzureAuthDemo.ManualTokenHandling
                 "&client_id=" + clientId +
                 "&prompt=consent" +
                 "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
-                "&display=popup" +
                 "&resource=" + Uri.EscapeDataString(resourceId);
         }
 
-        private static string getAuthorizationCode(string clientId, string redirectUri, string resourceId = "https://graph.microsoft.com")
+        private static string getAuthorizationCodeUrlV2(string clientId, string redirectUri, string scope)
+        {
+            return getAuthorityUrl("common") + "oauth2/v2.0/authorize?" +
+                   "response_type=code" +
+                   "&client_id=" + clientId +
+                   "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
+                   "&scope=" + Uri.EscapeDataString(scope);
+        }
+
+        private static string getAuthorizationCode(string clientId, string redirectUri, string resourceId = "https://graph.microsoft.com" )
         {
             var authUrl = getAuthorizationCodeUrl(clientId, redirectUri, resourceId);
+            return getAuthorizationCodeCore(authUrl);
+        }
+
+
+
+        private static string getAuthorizationCodeV2(string clientId, string redirectUri, string scope)
+        {
+            var authUrl = getAuthorizationCodeUrlV2(clientId, redirectUri, scope);
+            return getAuthorizationCodeCore(authUrl);
+        }
+
+        private static string getAuthorizationCodeCore(string authUrl)
+        {
             string authCode = "";
 
             // Thread umjesto taskova tako da mozemo apartment state postaviti
@@ -96,6 +127,7 @@ namespace AzureAuthDemo.ManualTokenHandling
             return authCode;
         }
 
+
         private static async Task<TokenResponse> getTokenResponseAsync(string clientId, string redirectUri, string authcode, string resourceId = "https://graph.microsoft.com")
         {
             using (HttpClient client = new HttpClient())
@@ -114,6 +146,27 @@ namespace AzureAuthDemo.ManualTokenHandling
                 )));
                 var content = await httpResponse.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<TokenResponse>(content);                
+            }
+        }
+
+        private static async Task<TokenResponse> getTokenResponseV2Async(string clientId, string redirectUri, string authcode, string scope)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(getAuthorityUrl("common"));
+                //client.DefaultRequestHeaders.Host = "https://login.microsoftonline.com";
+                var httpResponse = (await client.PostAsync("oauth2/v2.0/token", new FormUrlEncodedContent(
+                    new Dictionary<string, string>()
+                    {
+                        { "grant_type", "authorization_code" },
+                        { "client_id", clientId },
+                        { "code",  authcode },
+                        { "redirect_uri", redirectUri},
+                        { "scope", scope}
+                    }
+                )));
+                var content = await httpResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TokenResponse>(content);
             }
         }
 
