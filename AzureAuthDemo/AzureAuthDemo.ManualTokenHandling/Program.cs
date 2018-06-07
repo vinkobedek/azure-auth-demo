@@ -42,6 +42,13 @@ namespace AzureAuthDemo.ManualTokenHandling
             Console.WriteLine("5. Using access token");
             var graphResponse = GetGraphResponseAsync("me", tokenResponse.AccessToken).Result;
 
+            Console.WriteLine("6. Retrieving access token");
+            tokenResponse = getTokenResponseFromRefreshTokenAsync(STR_ClientId, STR_RedirectUri, tokenResponse.RefreshToken).Result;
+
+
+            Console.WriteLine("7. Using access token");
+            graphResponse = GetGraphResponseAsync("me", tokenResponse.AccessToken).Result;
+
 
         }
 
@@ -107,6 +114,25 @@ namespace AzureAuthDemo.ManualTokenHandling
                 )));
                 var content = await httpResponse.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<TokenResponse>(content);                
+            }
+        }
+
+        private static async Task<TokenResponse> getTokenResponseFromRefreshTokenAsync(string clientId, string redirectUri, string refreshToken, string resourceId = "https://graph.microsoft.com")
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(getAuthorityUrl("common"));
+                var httpResponse = (await client.PostAsync("oauth2/token", new FormUrlEncodedContent(
+                    new Dictionary<string, string>()
+                    {
+                        { "grant_type", "refresh_token" },
+                        { "client_id", clientId },
+                        { "refresh_token",  refreshToken },
+                        { "resource", resourceId}
+                    }
+                )));
+                var content = await httpResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TokenResponse>(content);
             }
         }
 
